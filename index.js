@@ -4,29 +4,39 @@ const express = require("express");
 const bodyParser=require("body-parser");
 
 //Cargar configuracion app WEB
-const PORT = process.env.PORT || 3500;
-
-console.log("Inicializar la Aplicacion WEB...");
 
 
-//Inicializar una APLICACION WEB
+
+//Inicializar una APLICACION WEB y conexion
+let dbConnector=require("./db/dbConnector");
 const app = express();
 
 // 1) Metodo HTTP (verbos HTTP)
 // 2) RUTA (VIrtual)
 // 3) EL ALGORITMO QUE YO PROGRAMO PARA RESPONDER ESA PETICION
 
+let appConfig=require("./config");
+
+
 console.log("Configurando Routers...");
+
 //Configuracion de ROUTERS
 const userRouter=require("./routes/routerUser");
-app.use(bodyParser.json());
-app.get(
-    "/",
+// const { createUser } = require("./db/getData");
+//registramos enrutador
 
-    function (req, res) {
-        res.send("Hello World!");
-    }
-);
+app.use("/"+appConfig.collectionUser,userRouter);
+
+//levantamos el servidor 
+
+app.listen(appConfig.PORT,(req,res)=>{
+    console.log("la aplicacion esta escuchando en la el puerto: "+ appConfig.PORT)
+})
+
+app.use(bodyParser.json());
+app.get("/",(req,res)=>{
+    res.send("Bienvenido al Backend");
+})
 
 app.use(
     "/app",
@@ -41,13 +51,6 @@ app.use("/api/usuarios",userRouter);
 app.use("/static", express.static("front/static"));
 
 
-
+//levantar el servidor
 console.log("Iniciando Servidor");
 
-let server = app.listen(
-    PORT,
-
-    function () {
-        console.log(`La aplicacion WEB esta escuchando en el PUERTO: ` + PORT);
-    }
-);
