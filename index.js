@@ -1,14 +1,17 @@
 console.log("Cargando configuracion...");
 //Importar las dependencias
 const express = require("express");
-const bodyParser=require("body-parser");
+var bodyParser=require("body-parser");
+let cors = require("cors");
+let session = require("express-session");
 
 //Cargar configuracion app WEB
 
 
 
 //Inicializar una APLICACION WEB y conexion
-let dbConnector=require("./db/dbConnector");
+//let dbConnector=require("./db/dbConnector");
+require("./db/dbInitializar")
 const app = express();
 
 // 1) Metodo HTTP (verbos HTTP)
@@ -27,13 +30,31 @@ const userRouter=require("./routes/routerUser");
 
 app.use("/"+appConfig.collectionUser,userRouter);
 
-//levantamos el servidor 
+
+//levantar el servidor
+console.log("Iniciando Servidor");
 
 app.listen(appConfig.PORT,(req,res)=>{
     console.log("la aplicacion esta escuchando en la el puerto: "+ appConfig.PORT)
 })
-
+//middleware
 app.use(bodyParser.json());
+app.use(cors());
+app.use(session({
+    secret: 'mipalabrasecreta',
+    cookie: { maxAge:60000, secure: false }
+  }))
+
+app.use((req,res,next)=>{
+    if(req.session.MI_VAR>-1){
+        req.session.MI_VAR=req.session+1;
+    }else{
+        req.session=0
+    }
+    console.log(req.session);
+    next();
+});
+
 app.get("/",(req,res)=>{
     res.send("Bienvenido al Backend");
 })
@@ -51,6 +72,5 @@ app.use("/api/usuarios",userRouter);
 app.use("/static", express.static("front/static"));
 
 
-//levantar el servidor
-console.log("Iniciando Servidor");
+
 
