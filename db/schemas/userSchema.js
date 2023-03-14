@@ -1,4 +1,4 @@
-let appConfig=require("../../config")
+let appConfig=require("../../config");
 const mongoose = require("mongoose");
 const usuariosSchema = new mongoose.Schema(
     {
@@ -6,15 +6,18 @@ const usuariosSchema = new mongoose.Schema(
         firstName: { type: String  },
         lastName: { type: String},
         idDocument: { type: String},
-        userName: { type: String},
+        userName: { type: String },
         email:{type:String},
         password: { type: String},
-        typeUser: { type: String},
-        assetUser: { type: Boolean}
+        assetUser: { type: Boolean},
+        typeUser: [{ 
+            ref:"role",
+            type:mongoose.Schema.Types.ObjectId
+        }],
     },
     {
         timestamps: true,
-        versionKey: false,
+        versionKey: false
     }
 );
 
