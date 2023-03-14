@@ -1,8 +1,18 @@
-const usuariosSchema=require("../db/schemas/userSchema");
+const {userModel,usuariosSchema}=require("../db/schemas/userSchema");
+const bcrypt=require("bcryptjs")
 
 const signUp=async (req,res)=>{
-     const {userName,email, password, roles} =req.body
-     res.json('signup')
+     const {userName,email, password, roles} =req.body;
+
+     const newUser=new userModel({
+          userName,
+          email,
+          password: await userModel.encryptPassword(password),
+          roles
+     })
+
+     await newUser.save()
+     res.json(newUser)
 }
 
 

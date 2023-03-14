@@ -1,27 +1,40 @@
-let appConfig=require("../../config");
+let appConfig=require("../../config")
 const mongoose = require("mongoose");
+const bcrypt=require("bcryptjs");
+
 const usuariosSchema = new mongoose.Schema(
     {
         
         firstName: { type: String  },
         lastName: { type: String},
         idDocument: { type: String},
-        userName: { type: String },
+        userName: { type: String},
         email:{type:String},
         password: { type: String},
         assetUser: { type: Boolean},
-        typeUser: [{ 
+        typeUser: [{
             ref:"role",
             type:mongoose.Schema.Types.ObjectId
-        }],
+
+        }]
     },
     {
         timestamps: true,
-        versionKey: false
+        versionKey: false,
     }
 );
 
+usuariosSchema.statics.encryptPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  };
+  
+  usuariosSchema.statics.comparePassword = async (password, receivedPassword) => {
+    return await bcrypt.compare(password, receivedPassword)
+  }
+
 const userModel = new mongoose.model("usuario", usuariosSchema);
+
 
 
 // async function createUser(userNewUser){
