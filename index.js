@@ -5,6 +5,8 @@ var bodyParser=require("body-parser");
 let cors = require("cors");
 let session = require("express-session");
 
+const {createRoles}=require("./lib/initialSetup")
+
 //Cargar configuracion app WEB
 
 
@@ -13,6 +15,7 @@ let session = require("express-session");
 //let dbConnector=require("./db/dbConnector");
 require("./db/dbInitializar")
 const app = express();
+createRoles();
 
 // 1) Metodo HTTP (verbos HTTP)
 // 2) RUTA (VIrtual)
@@ -45,15 +48,15 @@ app.use(session({
     cookie: { maxAge:60000, secure: false }
   }))
 
-app.use((req,res,next)=>{
-    if(req.session.MI_VAR>-1){
-        req.session.MI_VAR=req.session+1;
-    }else{
-        req.session=0
-    }
-    console.log(req.session);
-    next();
-});
+// app.use((req,res,next)=>{
+//     if(req.session.MI_VAR>-1){
+//         req.session.MI_VAR=req.session+1;
+//     }else{
+//         req.session=0
+//     }
+//     console.log(req.session);
+//     next();
+// });
 
 app.get("/",(req,res)=>{
     res.send("Bienvenido al Backend");

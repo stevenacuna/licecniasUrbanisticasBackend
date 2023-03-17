@@ -15,10 +15,15 @@ let fullUrl =
     "mongodb+srv://admin:admin123@cluster0.mz0e5va.mongodb.net/" +
     dbName +
     "?retryWrites=true&w=majority";
+
+    const secret={
+        SECRET:"saetecnology"
+    }
 module.exports = {
     PORT,
     connectionString,
     dbName,
     collectionUser,
     fullUrl,
+    secret
 };

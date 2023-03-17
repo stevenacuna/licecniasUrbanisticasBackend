@@ -1,0 +1,1 @@
+const userFound = userModel.find({email});
