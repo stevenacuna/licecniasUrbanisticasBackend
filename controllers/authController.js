@@ -9,7 +9,6 @@ const signUp = async (req, res) => {
 
     const newUser = new userModel({
         userName,
-        email,
         password: await userModel.encryptPassword(password),
         typeUser,
     });
@@ -50,7 +49,7 @@ const signIn = async (req, res) => {
     })
 
 
-    res.json({ token });
+    res.status(200).json({ token,userFound });
 };
 
 module.exports = {

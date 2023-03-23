@@ -1,6 +1,6 @@
 let appConfig = require("../../config");
 const mongoose = require("mongoose");
-const { roleModel, roleSchema } = require("../schemas/roles");
+const { roleModel} = require("../schemas/roles");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -99,13 +99,15 @@ async function deleteUser(id) {
         return {};
     }
 }
-async function getAllUser() {
+async function  getAllUser() {
     try {
         let filter = {};
-        let cursor = userModel.find(filter).cursor();
+        let cursor = userModel.find(filter).populate("typeUser").cursor();
         let result = [];
         let currentUser = await cursor.next();
+        
         while (currentUser != null) {
+            //userFound= await userModel.findById(currentUser._id).populate("typeUser");
             result.push(currentUser);
             currentUser = await cursor.next();
         }
@@ -128,7 +130,36 @@ async function findById(idUser) {
 
 async function findByIdAndUpdate(idUser, body) {
     try {
-        let result = userModel.findByIdAndUpdate(idUser, body);
+        
+        const {
+            firstName,
+            lastName,
+            idDocument,
+            userName,
+            email,
+            password,
+            assetUser,
+            typeUser
+        } = body;
+    
+        const userBody = {
+            firstName,
+            lastName,
+            idDocument,
+            userName,
+            email,
+            password: await userModel.encryptPassword(password),
+            assetUser,
+            typeUser
+        };
+        if (typeUser) {
+            const foundRoles = await roleModel.find({ name: { $in: typeUser } });
+            userBody.typeUser = foundRoles.map((role) => role.id);
+        } else {
+            const role = await roleModel.findOne({ name: "user" });
+            userBody.typeUser = [role._id];
+        }
+        let result = userModel.findByIdAndUpdate(idUser, userBody);
 
         return result;
     } catch (ex) {
